@@ -1,21 +1,20 @@
-// Import the 'express' module
 import express from 'express';
+import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import deliveryRouter from './routes/delivery.router';
 
-// Create an Express application
+dotenv.config();
 const app = express();
+const port = process.env.PORT || 6000;
 
-// Set the port number for the server
-const port = process.env.PORT || 5000;
+app.use(express.json());
+app.use('/deliveries', deliveryRouter);
 
-// Define a route for the root path ('/')
-app.get('/', (req, res) => {
-  // Send a response to the client
-  res.send('Customer Service');
-});
+mongoose
+  .connect('mongodb://localhost:27017/deliverydb')
+  .then(() => console.log('Connected to MongoDB (Delivery DB)'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
-  // Log a message when the server is successfully running
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Delivery Microservice running on port ${port}`);
 });
