@@ -1,21 +1,28 @@
-// Import the 'express' module
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+import connectDB from "./db";
 
-// Create an Express application
+import { authReviewService } from './middleware/review.middleware';
+import reviewsRoute from "./routes/review.route";
+
+dotenv.config();
+
 const app = express();
+const port = process.env.PORT || 11000;
 
-// Set the port number for the server
-const port = process.env.PORT || 5000;
+app.use(express.json());
+app.use(authReviewService);
 
-// Define a route for the root path ('/')
-app.get('/', (req, res) => {
-  // Send a response to the client
-  res.send('Customer Service');
+app.use("/reviews", reviewsRoute);
+interface UserRequest extends Request {
+  user?: { id: string; role: string };
+}
+
+app.get('/health', (_req: Request, res: Response) => {
+  res.json({status: "healthy"});
 });
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
-  // Log a message when the server is successfully running
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running at http://localhost:${port}`);
+  connectDB();
 });
