@@ -1,21 +1,18 @@
-// Import the 'express' module
 import express from 'express';
 import dotenv from 'dotenv';
+import { RabbitMQService } from './services/rabbitmq.service';
 
-// Create an Express application
+dotenv.config();
 const app = express();
-
-// Set the port number for the server
 const port = process.env.PORT || 5000;
 
-// Define a route for the root path ('/')
-app.get('/', (req, res) => {
-  // Send a response to the client
-  res.send('Customer Service');
+app.use(express.json());
+
+// Start consuming notification messages
+RabbitMQService.consumeNotifications().catch(err => {
+  console.error('Error starting RabbitMQ consumer:', err);
 });
 
-// Start the server and listen on the specified port
 app.listen(port, () => {
-  // Log a message when the server is successfully running
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Notification Microservice running on port ${port}`);
 });
